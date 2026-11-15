@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Radar — pre-token protocols ranked by implied value</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <p class="kicker">TOKEN RADAR &middot; DEFI LLAMA SNAPSHOT <span id="asof"></span></p>
+    <h1>Which launch is worth farming next?</h1>
+    <p class="lede">203 protocols that <strong>record no token</strong> — the 40-protocol watchlist plus 163 early finds below its floor — ranked by what a launch would be worth if the record stayed as it is. Every row is priced by <strong>one fitted size curve</strong>, the same curve for the board and for this page. It never predicts whether or when a token is issued.</p>
+    <div class="stats" id="stats"></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="model card" aria-label="How the value is built">
+    <h2>How the value is built — one fitted curve</h2>
+    <p class="formula" id="formula">log(market cap) = a + b &times; log(TVL)</p>
+    <p>Fitted by ordinary least squares on the <b id="compCount"></b> restricted comps at run time — token protocols with a market cap and TVL above zero, minus wrapped, staked and bridged products (Bridge, Canonical Bridge, Liquid Staking, Liquid Restaking, Restaked BTC, CEX) and versioned names. Implied value is exp(a + b &times; ln(TVL)); the slope is below 1, so the curve is sublinear and ranking is TVL-monotone by construction. Growth, age and chains were tested as extra terms and dropped: growth's fitted sign flips by split, age makes the blind error &times;6.0, chains carry a negative coefficient.</p>
+    <div class="model-flex">
+    <div id="chart" aria-label="Scatter chart of the 93 comps, log TVL against log market cap, with the fitted curve"></div>
+    <table class="valid" id="validTable">
+      <thead><tr><th>Blind check</th><th class="num">Typical error</th><th class="num">Tested on</th></tr></thead>
+      <tbody id="validRows"></tbody>
+    </table>
+    </div>
+    <p class="note" id="validNote"></p>
+  </section>
+
+  <section class="controls card" aria-label="Filter and sort the board">
+    <div class="ctl">
+      <label for="q">Search</label>
+      <input id="q" type="search" placeholder="Protocol name or slug…" autocomplete="off">
+    </div>
+    <div class="ctl">
+      <label for="cat">Category</label>
+      <select id="cat"><option value="">All categories</option></select>
+    </div>
+    <div class="ctl">
+      <label for="view">Show</label>
+      <select id="view">
+        <option value="all">All 203 ranked</option>
+        <option value="watchlist">Watchlist only (40)</option>
+        <option value="early">Early finds only (163)</option>
+        <option value="live">Live tokens (already trading)</option>
+      </select>
+    </div>
+    <div class="ctl">
+      <label for="sort">Sort by</label>
+      <select id="sort">
+        <option value="rank">Rank (implied value)</option>
+        <option value="tvl">TVL</option>
+        <option value="growth">7-day change</option>
+        <option value="age">Age with no token</option>
+      </select>
+    </div>
+    <p class="count" id="count" aria-live="polite"></p>
+  </section>
+
+  <section class="board card" aria-label="Ranked board">
+    <div class="table-wrap">
+      <table id="board">
+        <thead>
+          <tr>
+            <th data-sort="rank">Rank</th>
+            <th data-sort="name">Protocol</th>
+            <th data-sort="category">Category</th>
+            <th data-sort="chains">Chains</th>
+            <th data-sort="tvl" class="num">TVL</th>
+            <th data-sort="growth" class="num">7-day</th>
+            <th data-sort="age" class="num">Age</th>
+            <th data-sort="value" class="num">Implied value</th>
+            <th>Set</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <p class="hint">Click a row for its detail view and farm plan. Click a column header to sort.</p>
+  </section>
+
+  <section class="detail card" id="detail" aria-label="Protocol detail" hidden>
+    <button class="close" id="closeDetail" type="button">&times; Close detail</button>
+    <div id="detailBody"></div>
+  </section>
+
+  <section class="live card" aria-label="Live tokens">
+    <h2>Live tokens — the market's own yardstick</h2>
+    <p>These protocols already trade. Their market caps are the comps the curve is fitted on — the top 24 by market cap:</p>
+    <div class="table-wrap">
+      <table id="liveTable">
+        <thead><tr><th>Protocol</th><th>Category</th><th class="num">TVL</th><th class="num">Market cap</th><th class="num">Mcap / TVL</th></tr></thead>
+        <tbody id="liveRows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <p>Source: DefiLlama public API, snapshot <span id="srcDate"></span>. Implied values are this entry's model, never a market price and never a promise a token will launch. Farm steps name costs and times; never pay to claim, and claim only from a link the protocol itself publishes.</p>
+    <p>Verdict rule, printed so it can be checked: <b>Farm</b> if implied value is at least $15M and the plan's gas is at most $25; <b>Watch</b> if implied value is at least $5M; otherwise <b>Small</b> — farm only if you already use that chain.</p>
+  </footer>
+</main>
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
